@@ -27,7 +27,6 @@ const PaymentRequest = () => {
         const data = res.requests.filter(
           (item) => item.recipient._id === loggedUser._id
         );
-        console.log(data);
         setHistory(data);
       }
     };

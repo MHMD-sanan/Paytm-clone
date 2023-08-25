@@ -47,7 +47,6 @@ const PaymentRequestModal = ({ show, onHide }) => {
         navigate("/fund-request");
       }
     } catch (error) {
-      console.log(error);
       handleClear();
       setShowToast({
         status: true,

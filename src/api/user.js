@@ -1,6 +1,7 @@
 import axios from "axios";
 
 const BASE_URL = "http://localhost:4000";
+//const BASE_URL="https://peko-pkkd.onrender.com"
 
 export const loginUser = async (formData) => {
   try {
@@ -104,3 +105,42 @@ export const sendRequets = async (recipient) => {
     throw error.response.data;
   }
 };
+
+//otp generate
+export const genrateOtp = async (recipient) => {
+  try {
+    const response = await axios.post(
+      `${BASE_URL}/api/otp/sendOtp`,
+      recipient,
+      {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${localStorage.getItem("jwt")}`,
+        },
+      }
+    );
+    return response.data;
+  } catch (error) {
+    throw error.response.data;
+  }
+};
+
+//to verify otp
+export const verifyOtp = async (recipient) => {
+  try {
+    const response = await axios.post(
+      `${BASE_URL}/api/otp/verifyOtp`,
+      recipient,
+      {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${localStorage.getItem("jwt")}`,
+        },
+      }
+    );
+    return response.data;
+  } catch (error) {
+    throw error.response.data;
+  }
+};
+

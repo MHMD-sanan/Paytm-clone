@@ -1,9 +1,11 @@
-import React from 'react'
-import ProfileCard from "../components/ProfileCard"
+import React from "react";
+import ProfileCard from "../components/ProfileCard";
 const Profile = () => {
   return (
-    <ProfileCard/>
-  )
-}
+    <>
+      <ProfileCard />
+    </>
+  );
+};
 
-export default Profile
+export default Profile;

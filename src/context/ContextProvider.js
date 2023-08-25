@@ -15,6 +15,7 @@ export const ContextProvider = ({ children }) => {
     status: false,
     type: "",
     message: "",
+    otp: "",
   });
 
   const [recipient, setRecipient] = useState({
