@@ -1,4 +1,4 @@
-import { Button } from "react-bootstrap";
+import { Button, Table } from "react-bootstrap";
 import { useStateContext } from "../context/ContextProvider";
 import TransactionModal from "../components/TransactionModal";
 import { getHistory } from "../api/user";
@@ -16,6 +16,7 @@ const Transaction = () => {
     const fetchHistory = async () => {
       try {
         const res = await getHistory();
+        console.log(res);
         if (res.transactions.length === 0) {
           setHistory([]);
         } else {
@@ -62,40 +63,38 @@ const Transaction = () => {
         show={showTransaction}
         onHide={handleCloseTransaction}
       />
-      <div className="">
-        {history.length > 0 ? (
-          <table className="table">
-            <thead>
-              <tr className="text-center">
-                <th>Date</th>
-                <th>Transaction ID</th>
-                <th>Amount</th>
-                <th>Type</th>
-                <th>Reference Account</th>
+      {history.length > 0 ? (
+        <Table striped bordered responsive>
+          <thead>
+            <tr className="text-center">
+              <th>Date</th>
+              <th>Transaction ID</th>
+              <th>Amount</th>
+              <th>Type</th>
+              <th>Reference Account</th>
+            </tr>
+          </thead>
+          <tbody>
+            {history.map((value) => (
+              <tr key={value._id} className="text-center">
+                <td>{convertDate(value.date)}</td>
+                <td>{value._id}</td>
+                <td>$ {value.amount}</td>
+                <td>
+                  {value.sender._id === loggedUser._id ? "Debit" : "Credit"}
+                </td>
+                <td>
+                  {value.sender._id === loggedUser._id
+                    ? value.recipient.userName
+                    : value.sender.userName}
+                </td>
               </tr>
-            </thead>
-            <tbody>
-              {history.map((value) => (
-                <tr key={value._id} className="text-center">
-                  <td>{convertDate(value.date)}</td>
-                  <td>{value._id}</td>
-                  <td>$ {value.amount}</td>
-                  <td>
-                    {value.sender._id === loggedUser._id ? "Debit" : "Credit"}
-                  </td>
-                  <td>
-                    {value.sender._id === loggedUser._id
-                      ? value.recipient.userName
-                      : value.sender.userName}
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        ) : (
-          <p className="text-center mt-5">No transaction history found</p>
-        )}
-      </div>
+            ))}
+          </tbody>
+        </Table>
+      ) : (
+        <p className="text-center mt-5">No transaction history found</p>
+      )}
     </div>
   );
 };
