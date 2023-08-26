@@ -34,7 +34,8 @@ const PaymentRequestModal = ({ show, onHide }) => {
       setError({ recipient: true });
     }
   };
-  const handleRequest = async () => {
+  const handleRequest = async (e) => {
+    e.preventDefault();
     try {
       const res = await sendRequets(recipient);
       if (res.success) {
@@ -70,7 +71,7 @@ const PaymentRequestModal = ({ show, onHide }) => {
         <Modal.Title>Request Fund</Modal.Title>
       </Modal.Header>
       <Modal.Body>
-        <Form>
+        <Form onSubmit={recipient.found ? handleRequest : findUser}>
           <Form.Group className="mb-3">
             <Form.Control
               type="email"
@@ -97,11 +98,7 @@ const PaymentRequestModal = ({ show, onHide }) => {
               />
             </Form.Group>
           )}
-          <Button
-            variant="dark"
-            disabled={error.amount}
-            onClick={recipient.found ? handleRequest : findUser}
-          >
+          <Button variant="dark" disabled={error.amount} type="submit">
             {recipient.found ? "Request" : "Verify recipient"}
           </Button>
         </Form>

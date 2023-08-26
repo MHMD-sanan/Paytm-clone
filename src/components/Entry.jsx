@@ -1,12 +1,13 @@
 import React, { useState } from "react";
-import { Button, Form, Modal } from "react-bootstrap";
+import { Button, CloseButton, Form, Modal } from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
 import { loginUser, signupUser } from "../api/user";
 import { useStateContext } from "../context/ContextProvider";
 
 const Entry = ({ show, onHide }) => {
   const navigate = useNavigate();
-  const { setIsLogin, setShowLogin, setLoggedUser,setShowToast } = useStateContext();
+  const { setIsLogin, setShowLogin, setLoggedUser, setShowToast } =
+    useStateContext();
   const [isRegistering, setIsRegistering] = useState(false);
   const [error, setError] = useState("");
 
@@ -30,7 +31,13 @@ const Entry = ({ show, onHide }) => {
     setIsRegistering(!isRegistering);
   };
 
-  const handleAction = async () => {
+  const handleCloseButton = () => {
+    setShowLogin(false);
+    clearForm();
+  };
+
+  const handleAction = async (e) => {
+    e.preventDefault();
     try {
       let res;
       if (isRegistering) {
@@ -66,15 +73,16 @@ const Entry = ({ show, onHide }) => {
       aria-labelledby="contained-modal-title-vcenter"
       centered
     >
-      <Modal.Header closeButton>
+      <Modal.Header className="">
         <Modal.Title id="contained-modal-title-vcenter">
           {isRegistering
             ? "Paytm Wallet - Create account"
             : "Paytm Wallet - Login"}
         </Modal.Title>
+        <CloseButton onClick={handleCloseButton} />
       </Modal.Header>
       <Modal.Body>
-        <Form>
+        <Form onSubmit={handleAction}>
           {isRegistering && (
             <>
               <Form.Group className="mb-3">
@@ -127,7 +135,11 @@ const Entry = ({ show, onHide }) => {
             />
           </Form.Group>
           {error && <p className="text-danger">{error}</p>}
-          <Button variant="dark" onClick={handleAction}>
+          <Button
+            variant="dark"
+            type="submit"
+            // onClick={handleAction}
+          >
             {isRegistering ? "Register" : "Login"}
           </Button>
         </Form>

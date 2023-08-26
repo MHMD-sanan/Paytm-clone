@@ -56,7 +56,8 @@ const TransactionModal = ({ show, onHide }) => {
     }
   };
 
-  const handlePay = async () => {
+  const handlePay = async (e) => {
+    e.preventDefault();
     try {
       const res = await genrateOtp(recipient);
       if (res.success) {
@@ -72,7 +73,8 @@ const TransactionModal = ({ show, onHide }) => {
     }
   };
 
-  const handleOtp = async () => {
+  const handleOtp = async (e) => {
+    e.preventDefault();
     try {
       const res = await verifyOtp(recipient);
       if (res.success) {
@@ -100,7 +102,7 @@ const TransactionModal = ({ show, onHide }) => {
       </Modal.Header>
       <Modal.Body>
         {otpForm ? (
-          <Form>
+          <Form onSubmit={handleOtp}>
             <h4>Please enter the OTP to verify this transaction</h4>
             <p>OTP has been sent to your mail</p>
             <Form.Group className="mb-3">
@@ -116,13 +118,14 @@ const TransactionModal = ({ show, onHide }) => {
             </Form.Group>
             {error.otp && <p className="text-danger">Invalid OTP</p>}
             {error.amount && <p className="text-danger">No recipient found</p>}
-            <Button variant="dark" onClick={handleOtp}>
+            <Button variant="dark" type="submit">
               Verify otp
             </Button>
           </Form>
         ) : (
-          <Form>
+          <Form onSubmit={recipient.found ? handlePay : findUser}>
             <Form.Group className="mb-3">
+              <Form.Label>To</Form.Label>
               <Form.Control
                 type="email"
                 placeholder="Enter number or email"
@@ -159,7 +162,8 @@ const TransactionModal = ({ show, onHide }) => {
             <Button
               variant="dark"
               disabled={error.amount}
-              onClick={recipient.found ? handlePay : findUser}
+              type="submit"
+              // onClick={recipient.found ? handlePay : findUser}
             >
               {recipient.found ? "Send Money" : "Verify recipient"}
             </Button>
