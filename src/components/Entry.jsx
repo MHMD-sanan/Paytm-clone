@@ -10,6 +10,7 @@ const Entry = ({ show, onHide }) => {
     useStateContext();
   const [isRegistering, setIsRegistering] = useState(false);
   const [error, setError] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
 
   const [data, setData] = useState({
     userName: "",
@@ -17,6 +18,8 @@ const Entry = ({ show, onHide }) => {
     email: "",
     password: "",
   });
+
+  // Clear form fields
   const clearForm = () => {
     setData({
       userName: "",
@@ -25,21 +28,29 @@ const Entry = ({ show, onHide }) => {
       password: "",
     });
   };
+
+  // Toggle between login and registration forms
   const handleToggleForm = () => {
     setError("");
     clearForm();
     setIsRegistering(!isRegistering);
   };
 
+  // Close button click handler
   const handleCloseButton = () => {
     setShowLogin(false);
     clearForm();
   };
 
+  // Action (login/registration) handler
   const handleAction = async (e) => {
     e.preventDefault();
+    setIsLoading(true);
+
     try {
       let res;
+
+      // Perform login or registration based on the form
       if (isRegistering) {
         res = await signupUser(data);
       } else {
@@ -49,11 +60,16 @@ const Entry = ({ show, onHide }) => {
       if (res.success) {
         clearForm();
         setError("");
+
+        // Set user session and navigate to home page
         localStorage.setItem("jwt", res.token);
         setIsLogin(true);
         setLoggedUser(res.user);
         setShowLogin(false);
+        setIsLoading(false);
         navigate("/");
+
+        // Show success toast
         setShowToast({
           status: true,
           type: "success",
@@ -62,10 +78,10 @@ const Entry = ({ show, onHide }) => {
       }
     } catch (error) {
       clearForm();
+      setIsLoading(false);
       setError(error.error);
     }
   };
-
   return (
     <Modal
       show={show}
@@ -135,12 +151,8 @@ const Entry = ({ show, onHide }) => {
             />
           </Form.Group>
           {error && <p className="text-danger">{error}</p>}
-          <Button
-            variant="dark"
-            type="submit"
-            // onClick={handleAction}
-          >
-            {isRegistering ? "Register" : "Login"}
+          <Button variant="dark" type="submit" disabled={isLoading}>
+            {isLoading ? "Loading..." : isRegistering ? "Register" : "Login"}
           </Button>
         </Form>
       </Modal.Body>

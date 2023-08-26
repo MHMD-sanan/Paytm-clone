@@ -1,8 +1,14 @@
 import axios from "axios";
 
 const BASE_URL = "http://localhost:4000";
-//const BASE_URL="https://peko-pkkd.onrender.com"
+// const BASE_URL = "https://peko-pkkd.onrender.com";
 
+/**
+ * Function to perform user login.
+ * @param {Object} formData - Login form data.
+ * @returns {Promise} Response data from the server.
+ * @throws Throws an error if the request fails.
+ */
 export const loginUser = async (formData) => {
   try {
     const response = await axios.post(`${BASE_URL}/api/auth/login`, formData);
@@ -11,6 +17,13 @@ export const loginUser = async (formData) => {
     throw error.response.data;
   }
 };
+
+/**
+ * Function to perform user signup.
+ * @param {Object} formData - Signup form data.
+ * @returns {Promise} Response data from the server.
+ * @throws Throws an error if the request fails.
+ */
 export const signupUser = async (formData) => {
   try {
     const response = await axios.post(
@@ -23,6 +36,12 @@ export const signupUser = async (formData) => {
   }
 };
 
+/**
+ * Function to search for a user.
+ * @param {string} recipient - Recipient username.
+ * @returns {Promise} Response data from the server.
+ * @throws Throws an error if the request fails.
+ */
 export const searchUser = async (recipient) => {
   try {
     const response = await axios.post(
@@ -41,6 +60,11 @@ export const searchUser = async (recipient) => {
   }
 };
 
+/**
+ * Function to get transaction history.
+ * @returns {Promise} Response data from the server.
+ * @throws Throws an error if the request fails.
+ */
 export const getHistory = async () => {
   try {
     const response = await axios.get(`${BASE_URL}/api/transaction/history`, {
@@ -55,8 +79,12 @@ export const getHistory = async () => {
   }
 };
 
-//payment request apis
-export const getRequets = async () => {
+/**
+ * Function to get payment requests.
+ * @returns {Promise} Response data from the server.
+ * @throws Throws an error if the request fails.
+ */
+export const getRequests = async () => {
   try {
     const response = await axios.get(`${BASE_URL}/api/request/getRequests`, {
       headers: {
@@ -70,7 +98,13 @@ export const getRequets = async () => {
   }
 };
 
-export const sendRequets = async (recipient) => {
+/**
+ * Function to send a payment request.
+ * @param {string} recipient - Recipient username.
+ * @returns {Promise} Response data from the server.
+ * @throws Throws an error if the request fails.
+ */
+export const sendRequest = async (recipient) => {
   try {
     const response = await axios.post(
       `${BASE_URL}/api/request/sendRequest`,
@@ -88,8 +122,13 @@ export const sendRequets = async (recipient) => {
   }
 };
 
-//otp generate
-export const genrateOtp = async (recipient) => {
+/**
+ * Function to generate an OTP.
+ * @param {string} recipient - Recipient username.
+ * @returns {Promise} Response data from the server.
+ * @throws Throws an error if the request fails.
+ */
+export const generateOtp = async (recipient) => {
   try {
     const response = await axios.post(
       `${BASE_URL}/api/otp/sendOtp`,
@@ -107,7 +146,12 @@ export const genrateOtp = async (recipient) => {
   }
 };
 
-//to verify otp and make transaction
+/**
+ * Function to verify an OTP and make a transaction.
+ * @param {string} recipient - Recipient username.
+ * @returns {Promise} Response data from the server.
+ * @throws Throws an error if the request fails.
+ */
 export const verifyOtp = async (recipient) => {
   try {
     const response = await axios.post(

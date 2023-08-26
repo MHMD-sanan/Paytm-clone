@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { Button, Form, Modal } from "react-bootstrap";
-import { searchUser, genrateOtp, verifyOtp } from "../api/user";
+import { searchUser, generateOtp, verifyOtp } from "../api/user";
 import { useNavigate } from "react-router-dom";
 import { useStateContext } from "../context/ContextProvider";
 
@@ -21,10 +21,14 @@ const TransactionModal = ({ show, onHide }) => {
   });
 
   const [otpForm, setOtpForm] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
 
+  // Function to handle onBlur event for checking balance
   const handleBlur = () => {
     setError({ ...error, amount: recipient.amount > loggedUser.walletBalance });
   };
+
+  // Function to clear recipient and error states
   const handleClear = () => {
     setRecipient({
       recipientEmail: "",
@@ -39,7 +43,10 @@ const TransactionModal = ({ show, onHide }) => {
     setShowTransaction(false);
     setOtpForm(false);
   };
+
+  // Function to search for a user
   const findUser = async (e) => {
+    setIsLoading(true);
     e.preventDefault();
     try {
       const res = await searchUser(recipient);
@@ -51,29 +58,37 @@ const TransactionModal = ({ show, onHide }) => {
           recipientEmail: res.user.email,
         });
       }
+      setIsLoading(false);
     } catch (error) {
       setError({ recipient: true });
+      setIsLoading(false);
     }
   };
 
+  // Function to handle payment initiation and OTP generation
   const handlePay = async (e) => {
+    setIsLoading(true);
     e.preventDefault();
     try {
-      const res = await genrateOtp(recipient);
+      const res = await generateOtp(recipient);
       if (res.success) {
         setOtpForm(true);
       }
+      setIsLoading(false);
     } catch (error) {
+      setIsLoading(false);
       handleClear();
       setShowToast({
         status: true,
         type: "danger",
-        message: error || "something went wrong",
+        message: error || "Something went wrong",
       });
     }
   };
 
+  // Function to handle OTP verification and complete the transaction
   const handleOtp = async (e) => {
+    setIsLoading(true);
     e.preventDefault();
     try {
       const res = await verifyOtp(recipient);
@@ -83,13 +98,16 @@ const TransactionModal = ({ show, onHide }) => {
           type: "success",
           message: "Transaction successful",
         });
+        setIsLoading(false);
         handleClear();
         navigate("/fund-transfer");
       }
     } catch (error) {
+      setIsLoading(false);
       setError({ ...error, otp: true });
     }
   };
+
   return (
     <Modal
       show={show}
@@ -98,17 +116,18 @@ const TransactionModal = ({ show, onHide }) => {
       centered
     >
       <Modal.Header closeButton>
-        <Modal.Title>Transfer fund</Modal.Title>
+        <Modal.Title>Transfer Fund</Modal.Title>
       </Modal.Header>
       <Modal.Body>
         {otpForm ? (
+          // OTP Verification Form
           <Form onSubmit={handleOtp}>
             <h4>Please enter the OTP to verify this transaction</h4>
-            <p>OTP has been sent to your mail</p>
+            <p>OTP has been sent to your email</p>
             <Form.Group className="mb-3">
               <Form.Control
                 type="number"
-                placeholder="Enter the otp"
+                placeholder="Enter the OTP"
                 value={recipient.otp}
                 onChange={(e) =>
                   setRecipient({ ...recipient, otp: e.target.value })
@@ -117,12 +136,12 @@ const TransactionModal = ({ show, onHide }) => {
               />
             </Form.Group>
             {error.otp && <p className="text-danger">Invalid OTP</p>}
-            {error.amount && <p className="text-danger">No recipient found</p>}
-            <Button variant="dark" type="submit">
-              Verify otp
+            <Button variant="dark" type="submit" disabled={isLoading}>
+              {isLoading ? "Loading..." : "Verify OTP"}
             </Button>
           </Form>
         ) : (
+          // Payment Initiation Form
           <Form onSubmit={recipient.found ? handlePay : findUser}>
             <Form.Group className="mb-3">
               <Form.Label>To</Form.Label>
@@ -153,19 +172,20 @@ const TransactionModal = ({ show, onHide }) => {
                   required
                 />
                 {error.amount && (
-                  <p className="text-danger">
-                    Not enough balance in your wallet
-                  </p>
+                  <p className="text-danger">Not enough balance in your wallet</p>
                 )}
               </Form.Group>
             )}
             <Button
               variant="dark"
-              disabled={error.amount}
+              disabled={error.amount || isLoading}
               type="submit"
-              // onClick={recipient.found ? handlePay : findUser}
             >
-              {recipient.found ? "Send Money" : "Verify recipient"}
+              {isLoading
+                ? "Loading..."
+                : recipient.found
+                ? "Send Money"
+                : "Verify Recipient"}
             </Button>
           </Form>
         )}

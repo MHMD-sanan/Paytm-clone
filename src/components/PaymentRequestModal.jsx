@@ -2,7 +2,8 @@ import React, { useState } from "react";
 import { Button, Form, Modal } from "react-bootstrap";
 import { useStateContext } from "../context/ContextProvider";
 import { useNavigate } from "react-router-dom";
-import { searchUser, sendRequets } from "../api/user";
+import { searchUser, sendRequest } from "../api/user";
+
 const PaymentRequestModal = ({ show, onHide }) => {
   const navigate = useNavigate();
   const { setShowPaymentRequest, setShowToast } = useStateContext();
@@ -17,8 +18,11 @@ const PaymentRequestModal = ({ show, onHide }) => {
     amount: "",
   });
 
-  //search for user
+  const [isLoading, setIsLoading] = useState(false);
+
+  // Function to search for a user
   const findUser = async (e) => {
+    setIsLoading(true);
     e.preventDefault();
     try {
       const res = await searchUser(recipient);
@@ -30,14 +34,19 @@ const PaymentRequestModal = ({ show, onHide }) => {
           recipientEmail: res.user.email,
         });
       }
+      setIsLoading(false);
     } catch (error) {
+      setIsLoading(false);
       setError({ recipient: true });
     }
   };
+
+  // Function to handle sending the payment request
   const handleRequest = async (e) => {
+    setIsLoading(true);
     e.preventDefault();
     try {
-      const res = await sendRequets(recipient);
+      const res = await sendRequest(recipient);
       if (res.success) {
         setShowToast({
           status: true,
@@ -45,9 +54,11 @@ const PaymentRequestModal = ({ show, onHide }) => {
           message: "Payment request successful",
         });
         handleClear();
+        setIsLoading(false);
         navigate("/fund-request");
       }
     } catch (error) {
+      setIsLoading(false);
       handleClear();
       setShowToast({
         status: true,
@@ -56,10 +67,13 @@ const PaymentRequestModal = ({ show, onHide }) => {
       });
     }
   };
+
+  // Function to clear recipient and close the modal
   const handleClear = () => {
     setRecipient({});
     setShowPaymentRequest(false);
   };
+
   return (
     <Modal
       show={show}
@@ -98,8 +112,16 @@ const PaymentRequestModal = ({ show, onHide }) => {
               />
             </Form.Group>
           )}
-          <Button variant="dark" disabled={error.amount} type="submit">
-            {recipient.found ? "Request" : "Verify recipient"}
+          <Button
+            variant="dark"
+            disabled={error.amount || isLoading}
+            type="submit"
+          >
+            {isLoading
+              ? "Loading..."
+              : recipient.found
+              ? "Request"
+              : "Verify recipient"}
           </Button>
         </Form>
       </Modal.Body>

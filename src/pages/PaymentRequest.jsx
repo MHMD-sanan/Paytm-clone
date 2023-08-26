@@ -1,9 +1,10 @@
 import React, { useEffect, useState } from "react";
-import { Button } from "react-bootstrap";
+import { Button, Table } from "react-bootstrap";
 import PaymentRequestModal from "../components/PaymentRequestModal";
 import { useStateContext } from "../context/ContextProvider";
-import { getRequets } from "../api/user";
+import { getRequests } from "../api/user";
 import { useNavigate } from "react-router-dom";
+
 const PaymentRequest = () => {
   const navigate = useNavigate();
   const {
@@ -14,23 +15,27 @@ const PaymentRequest = () => {
     setRecipient,
   } = useStateContext();
 
-  const [history, setHistory] = useState();
+  const [history, setHistory] = useState([]);
+
   useEffect(() => {
+    // Fetch payment requests history
     const fetchHistory = async () => {
-      const res = await getRequets();
-      if (res.success && res.requests.length === 0) {
-        setHistory("");
-      } else {
-        const data = res.requests.filter(
-          (item) => item.recipient._id === loggedUser._id
-        );
-        setHistory(data);
+      try {
+        const res = await getRequests();
+        if (res.success) {
+          const data = res.requests.filter(
+            (item) => item.recipient._id === loggedUser._id
+          );
+          setHistory(data);
+        }
+      } catch (error) {
+        console.error("Error fetching payment requests:", error);
       }
     };
     fetchHistory();
-  }, []);
+  }, [loggedUser]);
 
-  //for request
+  // Show and hide PaymentRequestModal
   const handleShowPaymentRequest = () => {
     setShowPaymentRequest(true);
   };
@@ -38,6 +43,7 @@ const PaymentRequest = () => {
     setShowPaymentRequest(false);
   };
 
+  // Convert date to a user-friendly format
   const convertDate = (date) => {
     const newDate = new Date(date);
     return newDate.toLocaleTimeString("en-US", {
@@ -50,6 +56,8 @@ const PaymentRequest = () => {
       hour12: true,
     });
   };
+
+  // Handle payment action
   const handlePay = (email, amount, requestId) => {
     setRecipient({
       recipientEmail: email,
@@ -60,29 +68,28 @@ const PaymentRequest = () => {
     setShowTransaction(true);
     navigate("/fund-transfer");
   };
+
   return (
     <div className="m-5">
-      <div className="my-3 d-flex justify-content-between">
+      <div className="my-3 d-flex justify-content-between align-items-center">
         <h3>Requests</h3>
-        <div className="">
-          <Button variant="dark" onClick={handleShowPaymentRequest}>
-            Request Money
-          </Button>
-        </div>
-        <PaymentRequestModal
-          show={showPaymentRequest}
-          onHide={handleClosePaymentRequest}
-        ></PaymentRequestModal>
+        <Button variant="dark" onClick={handleShowPaymentRequest}>
+          Request Money
+        </Button>
       </div>
+      <PaymentRequestModal
+        show={showPaymentRequest}
+        onHide={handleClosePaymentRequest}
+      />
       <div className="container">
-        {history ? (
-          <table className="table">
+        {history.length > 0 ? (
+          <Table striped bordered responsive>
             <thead>
               <tr className="text-center">
                 <th>Date</th>
-                <th scope="col">Sender</th>
-                <th scope="col">Amount</th>
-                <th scope="col">Action</th>
+                <th>Sender</th>
+                <th>Amount</th>
+                <th>Action</th>
               </tr>
             </thead>
             <tbody>
@@ -90,7 +97,7 @@ const PaymentRequest = () => {
                 <tr key={value._id} className="text-center">
                   <td>{convertDate(value.createdDate)}</td>
                   <td>{value.sender.userName}</td>
-                  <td>{value.amount}</td>
+                  <td>$ {value.amount}</td>
                   <td>
                     {value.status === "pending" ? (
                       <Button
@@ -108,9 +115,9 @@ const PaymentRequest = () => {
                 </tr>
               ))}
             </tbody>
-          </table>
+          </Table>
         ) : (
-          <p className="text-center mt-5">No trasaction history found</p>
+          <p className="text-center mt-5">No transaction history found</p>
         )}
       </div>
     </div>

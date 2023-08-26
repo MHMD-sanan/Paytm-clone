@@ -5,20 +5,30 @@ import { getHistory } from "../api/user";
 import { useEffect, useState } from "react";
 
 const Transaction = () => {
+  // Get state variables from context
   const { showTransaction, setShowTransaction, loggedUser } = useStateContext();
-  const [history, setHistory] = useState();
+
+  // State to store transaction history
+  const [history, setHistory] = useState([]);
+
+  // Fetch transaction history on component mount
   useEffect(() => {
     const fetchHistory = async () => {
-      const res = await getHistory();
-      if (res.transactions.length === 0) {
-        setHistory("");
-      } else {
-        setHistory(res.transactions);
+      try {
+        const res = await getHistory();
+        if (res.transactions.length === 0) {
+          setHistory([]);
+        } else {
+          setHistory(res.transactions);
+        }
+      } catch (error) {
+        console.error("Error fetching transaction history:", error);
       }
     };
     fetchHistory();
   }, []);
 
+  // Show and hide TransactionModal
   const handleShowTransaction = () => {
     setShowTransaction(true);
   };
@@ -26,6 +36,7 @@ const Transaction = () => {
     setShowTransaction(false);
   };
 
+  // Convert date to a user-friendly format
   const convertDate = (date) => {
     const newDate = new Date(date);
     return newDate.toLocaleTimeString("en-US", {
@@ -41,28 +52,26 @@ const Transaction = () => {
 
   return (
     <div className="m-5">
-      <div className="my-3 d-flex justify-content-between">
-        <h3>TRASACTIONS</h3>
-        <div className="">
-          <Button variant="dark" onClick={handleShowTransaction}>
-            Send Money
-          </Button>
-        </div>
-        <TransactionModal
-          show={showTransaction}
-          onHide={handleCloseTransaction}
-        ></TransactionModal>
+      <div className="my-3 d-flex justify-content-between align-items-center">
+        <h3>TRANSACTIONS</h3>
+        <Button variant="dark" onClick={handleShowTransaction}>
+          Send Money
+        </Button>
       </div>
+      <TransactionModal
+        show={showTransaction}
+        onHide={handleCloseTransaction}
+      />
       <div className="">
-        {history ? (
+        {history.length > 0 ? (
           <table className="table">
             <thead>
               <tr className="text-center">
-                <th scope="col">Date</th>
-                <th scope="col">Transation ID</th>
-                <th scope="col">Amount</th>
-                <th scope="col">Type</th>
-                <th scope="col">Reference Account</th>
+                <th>Date</th>
+                <th>Transaction ID</th>
+                <th>Amount</th>
+                <th>Type</th>
+                <th>Reference Account</th>
               </tr>
             </thead>
             <tbody>
@@ -70,7 +79,7 @@ const Transaction = () => {
                 <tr key={value._id} className="text-center">
                   <td>{convertDate(value.date)}</td>
                   <td>{value._id}</td>
-                  <td>{value.amount}</td>
+                  <td>$ {value.amount}</td>
                   <td>
                     {value.sender._id === loggedUser._id ? "Debit" : "Credit"}
                   </td>
@@ -84,7 +93,7 @@ const Transaction = () => {
             </tbody>
           </table>
         ) : (
-          <p className="text-center mt-5">No trasaction history found</p>
+          <p className="text-center mt-5">No transaction history found</p>
         )}
       </div>
     </div>
