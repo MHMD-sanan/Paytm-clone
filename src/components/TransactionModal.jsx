@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { Button, Form, Modal } from "react-bootstrap";
-import { searchUser, sendMoney, genrateOtp, verifyOtp } from "../api/user";
+import { searchUser, genrateOtp, verifyOtp } from "../api/user";
 import { useNavigate } from "react-router-dom";
 import { useStateContext } from "../context/ContextProvider";
 
@@ -17,6 +17,7 @@ const TransactionModal = ({ show, onHide }) => {
   const [error, setError] = useState({
     recipient: false,
     amount: false,
+    otp: false,
   });
 
   const [otpForm, setOtpForm] = useState(false);
@@ -25,7 +26,16 @@ const TransactionModal = ({ show, onHide }) => {
     setError({ ...error, amount: recipient.amount > loggedUser.walletBalance });
   };
   const handleClear = () => {
-    setRecipient({});
+    setRecipient({
+      recipientEmail: "",
+      found: false,
+      amount: "",
+    });
+    setError({
+      recipient: false,
+      amount: false,
+      otp: false,
+    });
     setShowTransaction(false);
     setOtpForm(false);
   };
@@ -60,25 +70,6 @@ const TransactionModal = ({ show, onHide }) => {
         message: error || "something went wrong",
       });
     }
-    // try {
-    //   const res = await sendMoney(recipient);
-    //   if (res.success) {
-    //     setShowToast({
-    //       status: true,
-    //       type: "success",
-    //       message: "Transaction successful",
-    //     });
-    //     handleClear();
-    //     navigate("/fund-transfer");
-    //   }
-    // } catch (error) {
-    //   handleClear();
-    //   setShowToast({
-    //     status: true,
-    //     type: "danger",
-    //     message: error,
-    //   });
-    // }
   };
 
   const handleOtp = async () => {
@@ -94,12 +85,7 @@ const TransactionModal = ({ show, onHide }) => {
         navigate("/fund-transfer");
       }
     } catch (error) {
-      handleClear();
-      setShowToast({
-        status: true,
-        type: "danger",
-        message: error || "something went wrong",
-      });
+      setError({ ...error, otp: true });
     }
   };
   return (
@@ -128,6 +114,8 @@ const TransactionModal = ({ show, onHide }) => {
                 required
               />
             </Form.Group>
+            {error.otp && <p className="text-danger">Invalid OTP</p>}
+            {error.amount && <p className="text-danger">No recipient found</p>}
             <Button variant="dark" onClick={handleOtp}>
               Verify otp
             </Button>

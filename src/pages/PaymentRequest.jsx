@@ -4,7 +4,6 @@ import PaymentRequestModal from "../components/PaymentRequestModal";
 import { useStateContext } from "../context/ContextProvider";
 import { getRequets } from "../api/user";
 import { useNavigate } from "react-router-dom";
-import RequestPayModal from "../components/RequestPayModal";
 const PaymentRequest = () => {
   const navigate = useNavigate();
   const {
@@ -13,8 +12,6 @@ const PaymentRequest = () => {
     loggedUser,
     setShowTransaction,
     setRecipient,
-    showRequestPay,
-    setShowRequestPay,
   } = useStateContext();
 
   const [history, setHistory] = useState();
@@ -41,18 +38,6 @@ const PaymentRequest = () => {
     setShowPaymentRequest(false);
   };
 
-  //for paying request with separate modal
-  // const handleShowRequestPay = (email,amount) => {
-  //   setShowRequestPay(true);
-  //   setRecipient({
-  //     recipientEmail: email,
-  //     found: true,
-  //     amount: amount,
-  //   });
-  // };
-  // const handleCloseRequestPay = () => {
-  //   setShowRequestPay(false);
-  // };
   const convertDate = (date) => {
     const newDate = new Date(date);
     return newDate.toLocaleTimeString("en-US", {
@@ -65,11 +50,12 @@ const PaymentRequest = () => {
       hour12: true,
     });
   };
-  const handlePay = (email, amount) => {
+  const handlePay = (email, amount, requestId) => {
     setRecipient({
       recipientEmail: email,
       found: true,
       amount: amount,
+      paymentRequestId: requestId,
     });
     setShowTransaction(true);
     navigate("/fund-transfer");
@@ -87,11 +73,6 @@ const PaymentRequest = () => {
           show={showPaymentRequest}
           onHide={handleClosePaymentRequest}
         ></PaymentRequestModal>
-
-        {/* <RequestPayModal
-          show={showRequestPay}
-          onHide={handleCloseRequestPay}
-        ></RequestPayModal> */}
       </div>
       <div className="container">
         {history ? (
@@ -111,14 +92,18 @@ const PaymentRequest = () => {
                   <td>{value.sender.userName}</td>
                   <td>{value.amount}</td>
                   <td>
-                    <Button
-                      variant="dark"
-                      onClick={() =>
-                        handlePay(value.sender.email, value.amount)
-                      }
-                    >
-                      Pay
-                    </Button>
+                    {value.status === "pending" ? (
+                      <Button
+                        variant="dark"
+                        onClick={() =>
+                          handlePay(value.sender.email, value.amount, value._id)
+                        }
+                      >
+                        Pay
+                      </Button>
+                    ) : (
+                      value.status
+                    )}
                   </td>
                 </tr>
               ))}

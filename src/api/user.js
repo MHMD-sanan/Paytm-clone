@@ -41,24 +41,6 @@ export const searchUser = async (recipient) => {
   }
 };
 
-export const sendMoney = async (recipient) => {
-  try {
-    const response = await axios.post(
-      `${BASE_URL}/api/transaction/transfer`,
-      recipient,
-      {
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${localStorage.getItem("jwt")}`,
-        },
-      }
-    );
-    return response.data;
-  } catch (error) {
-    throw error.response.data;
-  }
-};
-
 export const getHistory = async () => {
   try {
     const response = await axios.get(`${BASE_URL}/api/transaction/history`, {
@@ -125,7 +107,7 @@ export const genrateOtp = async (recipient) => {
   }
 };
 
-//to verify otp
+//to verify otp and make transaction
 export const verifyOtp = async (recipient) => {
   try {
     const response = await axios.post(
@@ -143,4 +125,3 @@ export const verifyOtp = async (recipient) => {
     throw error.response.data;
   }
 };
-

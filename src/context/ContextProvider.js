@@ -16,6 +16,7 @@ export const ContextProvider = ({ children }) => {
     type: "",
     message: "",
     otp: "",
+    paymentRequestId:""
   });
 
   const [recipient, setRecipient] = useState({
