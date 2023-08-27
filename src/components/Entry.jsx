@@ -117,7 +117,7 @@ const Entry = ({ show, onHide }) => {
               <Form.Group controlId="mobile" className="mb-3">
                 <Form.Label>Mobile number</Form.Label>
                 <Form.Control
-                  type="number"
+                  type="tel"
                   placeholder="Enter mobile number"
                   value={data?.mobileNumber}
                   required
