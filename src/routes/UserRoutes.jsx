@@ -5,27 +5,19 @@ import NavBar from "../components/NavBar";
 import Transaction from "../pages/Transaction";
 import Profile from "../pages/Profile";
 import PaymentRequest from "../pages/PaymentRequest";
-import { useStateContext } from "../context/ContextProvider";
+import RouteProtect from "../components/RouteProtect";
 function UserRoutes() {
-  const { isLogin } = useStateContext();
   return (
     <>
       <NavBar />
-      <Routes>
-        <Route path="/" element={<Home />} />
-        <Route
-          path="/fund-transfer"
-          element={isLogin ? <Transaction /> : <Navigate to="/" />}
-        />
-        <Route
-          path="/fund-request"
-          element={isLogin ? <PaymentRequest /> : <Navigate to="/" />}
-        />
-        <Route
-          path="/profile"
-          element={isLogin ? <Profile /> : <Navigate to="/" />}
-        />
-      </Routes>
+      <RouteProtect>
+        <Routes>
+          <Route path="/" element={<Home />} />
+          <Route path="/fund-transfer" element={<Transaction />} />
+          <Route path="/fund-request" element={<PaymentRequest />} />
+          <Route path="/profile" element={<Profile />} />
+        </Routes>
+      </RouteProtect>
     </>
   );
 }
