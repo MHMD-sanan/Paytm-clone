@@ -2,7 +2,8 @@ import React, { useState } from "react";
 import { Button, Form, Modal } from "react-bootstrap";
 import { useStateContext } from "../context/ContextProvider";
 import { useNavigate } from "react-router-dom";
-import { searchUser, sendRequest } from "../api/user";
+import { searchUser } from "../api/transaction";
+import { sendRequest } from "../api/request";
 
 const PaymentRequestModal = ({ show, onHide }) => {
   const navigate = useNavigate();

@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { Button, CloseButton, Form, Modal } from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
-import { loginUser, signupUser } from "../api/user";
+import { loginUser, signupUser } from "../api/entry";
 import { useStateContext } from "../context/ContextProvider";
 
 const Entry = ({ show, onHide }) => {

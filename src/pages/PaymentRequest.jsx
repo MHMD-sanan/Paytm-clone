@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { Button, Table } from "react-bootstrap";
 import PaymentRequestModal from "../components/PaymentRequestModal";
 import { useStateContext } from "../context/ContextProvider";
-import { getRequests } from "../api/user";
+import { getRequests } from "../api/request";
 import { useNavigate } from "react-router-dom";
 
 const PaymentRequest = () => {

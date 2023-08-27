@@ -1,6 +1,6 @@
 import "bootstrap/dist/css/bootstrap.min.css";
 import { useStateContext } from "../context/ContextProvider";
-const ProfileCard = ({ userName, email, mobileNumber, walletBalance }) => {
+const ProfileCard = () => {
   const { loggedUser } = useStateContext();
   return (
     <div className="card d-flex align-items-center text-center text-black fs-5 fw-bold">

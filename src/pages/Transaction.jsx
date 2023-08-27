@@ -1,7 +1,7 @@
 import { Button, Table } from "react-bootstrap";
 import { useStateContext } from "../context/ContextProvider";
 import TransactionModal from "../components/TransactionModal";
-import { getHistory } from "../api/user";
+import { getHistory } from "../api/transaction";
 import { useEffect, useState } from "react";
 
 const Transaction = () => {

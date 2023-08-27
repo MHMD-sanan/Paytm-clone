@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { Button, Form, Modal } from "react-bootstrap";
-import { searchUser, generateOtp, verifyOtp } from "../api/user";
+import { searchUser, generateOtp, verifyOtp } from "../api/transaction";
 import { useNavigate } from "react-router-dom";
 import { useStateContext } from "../context/ContextProvider";
 
